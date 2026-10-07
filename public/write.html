@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>더 살기 좋은 과천시를 위해 제안해요 | 학생용 제안하는 글쓰기</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .team-select-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .team-btn {
+      flex: 1;
+      min-width: 65px;
+      padding: 12px 10px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .team-btn.selected {
+      border-color: var(--color-primary);
+      background: #eff6ff;
+      color: var(--color-primary);
+      box-shadow: var(--shadow-focus);
+    }
+    .problem-rec-card {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .problem-rec-card:hover {
+      border-color: #60a5fa;
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+    .problem-rec-card.selected {
+      border-color: var(--color-primary);
+      background: #eff6ff;
+      box-shadow: var(--shadow-focus);
+    }
+    .problem-card-count {
+      align-self: flex-start;
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 9999px;
+    }
+    .ref-example-box {
+      margin-top: 6px;
+      background: #f1f5f9;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.45;
+    }
+    .speech-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 네비게이션 -->
+  <header class="top-nav">
+    <a href="index.html" class="nav-brand">
+      <span>🏙️ 과천시 수업</span>
+      <span class="badge">화면 3</span>
+    </a>
+    <div class="nav-actions">
+      <a href="index.html" class="btn-home">
+        <span>🏠 처음으로</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-container">
+
+    <!-- 페이지 헤더 -->
+    <section class="page-header">
+      <div class="category-badge">활동 3 · 제안하는 글쓰기</div>
+      <h1>✉️ 더 살기 좋은 과천시를 위해 제안해요</h1>
+      <p class="subtitle">우리 동네 과천시의 문제를 찾아보고, 실천할 수 있는 제안과 까닭을 담아 정성껏 편지를 써 봅시다.</p>
+    </section>
+
+    <!-- 수업 안내 및 주의사항 배너 -->
+    <div class="banner notice">
+      <span class="banner-icon">💡</span>
+      <div class="banner-text">
+        <strong>글쓰기 안내:</strong>
+        내가 겪거나 확인한 일을 바탕으로 써 주세요. 제안은 실제로 실천할 수 있는 내용으로 생각해 보세요.<br>
+        <span style="font-size: 0.9rem; color: #4b5563;">* 모든 예시 상황은 실제 조사 결과가 아니라 글쓰기를 돕는 가상의 예시입니다.</span><br>
+        <span style="font-size: 0.9rem; color: #4b5563;">* 이 편지는 수업 게시판에 올리는 글이에요. 과천시청이나 받는 사람에게 자동으로 보내지지는 않아요.</span>
+      </div>
+    </div>
+
+    <!-- 작성 폼 -->
+    <form id="write-form" novalidate>
+
+      <!-- 학생 정보 (모둠, 이름) -->
+      <section class="card">
+        <h2 class="card-title">
+          <span>작성자 정보</span>
+        </h2>
+        
+        <div class="form-group">
+          <label class="form-label">
+            모둠 선택 <span class="badge-required">필수</span>
+          </label>
+          <div class="team-select-group" id="team-selector">
+            <button type="button" class="team-btn" data-team="1">1모둠</button>
+            <button type="button" class="team-btn" data-team="2">2모둠</button>
+            <button type="button" class="team-btn" data-team="3">3모둠</button>
+            <button type="button" class="team-btn" data-team="4">4모둠</button>
+            <button type="button" class="team-btn" data-team="5">5모둠</button>
+            <button type="button" class="team-btn" data-team="6">6모둠</button>
+          </div>
+          <input type="hidden" id="input-team">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" for="input-name">
+            이름 또는 별명 <span class="badge-required">필수</span>
+          </label>
+          <input
+            type="text"
+            id="input-name"
+            class="form-control"
+            maxlength="20"
+            placeholder="예: 민우 or 과천지킴이">
+          <div class="card-help" style="margin-top: 6px; margin-bottom: 0;">
+            선생님이 안내한 이름이나 별명을 써 주세요. 게시판에도 표시돼요.
+          </div>
+        </div>
+      </section>
+
+      <!-- 1단계: 해결하고 싶은 문제 고르기 -->
+      <section class="card" id="step1-card">
+        <h2 class="card-title">
+          <span>1단계: 해결하고 싶은 문제 고르기</span>
+        </h2>
+        <p class="card-help">
+          우리 반 설문에서 많이 나온 문제 카드 중 하나를 골라보세요. 카드를 누르면 아래 문제상황 글이 자동으로 채워집니다.
+        </p>
+
+        <!-- 상위 8개 문제 추천 카드 컨테이너 -->
+        <div id="recommended-problems-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 16px;">
+          <!-- 동적으로 생성 -->
+          <div style="text-align: center; color: #94a3b8; padding: 20px;">설문 데이터를 불러오는 중...</div>
+        </div>
+
+        <button type="button" class="btn btn-secondary" id="btn-custom-problem" style="width: auto; padding: 10px 18px; font-size: 0.95rem;">
+          ✏️ 내가 겪은 다른 문제 직접 쓰기
+        </button>
+      </section>
+
+      <!-- 2단계: 제안과 까닭 쓰기 -->
+      <section class="card" id="step2-card">
+        <h2 class="card-title">
+          <span>2단계: 제안과 까닭 쓰기</span>
+        </h2>
+
+        <!-- 받는 사람 선택 -->
+        <div class="form-group">
+          <label class="form-label">
+            받는 사람 <span class="badge-required">필수</span>
+          </label>
+          <div class="card-help" style="margin-bottom: 8px;">
+            이 문제를 해결할 수 있거나, 함께 실천할 수 있는 사람을 골라 보세요.
+          </div>
+          <div class="choice-grid" id="recipient-grid">
+            <button type="button" class="choice-btn" data-value="과천시장님께">
+              <span class="choice-header">👑 과천시장님께</span>
+              <span class="choice-desc">과천시 전체의 정책과 살림을 이끄시는 시장님</span>
+            </button>
+            <button type="button" class="choice-btn" data-value="과천시청 담당자님께">
+              <span class="choice-header">🏢 과천시청 담당자님께</span>
+              <span class="choice-desc">도로, 교통, 청소, 공원 등을 관리하는 공무원 선생님</span>
+            </button>
+            <button type="button" class="choice-btn" data-value="해당 시설 관리자님께">
+              <span class="choice-header">🛝 해당 시설 관리자님께</span>
+              <span class="choice-desc">도서관장님, 공원 관리소, 체육시설 담당자님 등</span>
+            </button>
+            <button type="button" class="choice-btn" data-value="과천시민 여러분께">
+              <span class="choice-header">👥 과천시민 여러분께</span>
+              <span class="choice-desc">시설을 함께 아끼고 배려하며 이용할 시민 이웃들</span>
+            </button>
+          </div>
+          <input type="hidden" id="input-recipient">
+        </div>
+
+        <!-- 문제상황 -->
+        <div class="form-group">
+          <label class="form-label" for="input-problem">
+            문제상황 <span class="badge-required">필수</span>
+          </label>
+          <div class="scaffold-box">
+            💡 문장 틀: “과천시의 ( &nbsp;&nbsp;&nbsp;&nbsp; )에서 ( &nbsp;&nbsp;&nbsp;&nbsp; )하는 문제가 있습니다.”
+          </div>
+          <textarea
+            id="input-problem"
+            class="form-control"
+            rows="3"
+            maxlength="200"
+            placeholder="예: 과천시의 공원·산책로에서 쉴 공간이 부족해 어르신과 어린이들이 쉬지 못하는 문제가 있습니다."></textarea>
+        </div>
+
+        <!-- 제안 -->
+        <div class="form-group">
+          <label class="form-label" for="input-proposal">
+            제안 <span class="badge-required">필수</span>
+          </label>
+          <div class="scaffold-box">
+            💡 문장 틀: “이 문제를 해결하기 위해 ( &nbsp;&nbsp;&nbsp;&nbsp; )하면 좋겠습니다.”
+          </div>
+          <textarea
+            id="input-proposal"
+            class="form-control"
+            rows="3"
+            maxlength="200"
+            placeholder="예: 산책로 중간중간에 그늘이 있는 튼튼한 벤치를 더 많이 설치해 주시면 좋겠습니다."></textarea>
+        </div>
+
+        <!-- 까닭 1 -->
+        <div class="form-group">
+          <label class="form-label" for="input-reason1">
+            까닭 ① <span class="badge-required">필수</span>
+          </label>
+          <div class="scaffold-box">
+            💡 문장 틀: “왜냐하면 ( &nbsp;&nbsp;&nbsp;&nbsp; )하기 때문입니다.”
+          </div>
+          <textarea
+            id="input-reason1"
+            class="form-control"
+            rows="2"
+            maxlength="200"
+            placeholder="예: 왜냐하면 산책을 하다가 다리가 아픈 주민들이 편안하게 쉬어 갈 수 있기 때문입니다."></textarea>
+        </div>
+
+        <!-- 까닭 2 -->
+        <div class="form-group">
+          <label class="form-label" for="input-reason2">
+            까닭 ② <span class="badge-optional">선택</span>
+          </label>
+          <div class="scaffold-box" style="border-left-color: #60a5fa; background: #f8fafc;">
+            💡 문장 틀: “또한 ( &nbsp;&nbsp;&nbsp;&nbsp; )할 수 있기 때문입니다.”
+          </div>
+          <textarea
+            id="input-reason2"
+            class="form-control"
+            rows="2"
+            maxlength="200"
+            placeholder="예: 또한 벤치에서 이웃 주민들이 서로 다정하게 이야기를 나누며 더 따뜻한 동네가 될 수 있기 때문입니다."></textarea>
+        </div>
+
+      </section>
+
+      <!-- 3단계: 편지 미리보기 -->
+      <section class="card" id="step3-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <h2 class="card-title" style="margin-bottom: 0;">
+            <span>3단계: 완성된 편지 미리보기</span>
+          </h2>
+          <div class="speech-controls" id="speech-controls-wrapper">
+            <button type="button" class="btn btn-secondary" id="btn-speak" style="width: auto; padding: 8px 16px; font-size: 0.95rem;">
+              🔊 소리 내어 읽기
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-stop-speak" style="width: auto; padding: 8px 16px; font-size: 0.95rem; display: none;">
+              ⏹️ 멈추기
+            </button>
+          </div>
+        </div>
+
+        <p class="card-help">
+          여러분이 작성한 내용이 격식 있는 정중한 편지로 자동 조립됩니다. 소리 내어 읽어보며 자연스러운지 확인해 보세요.
+        </p>
+
+        <!-- 편지지 종이 렌더링 -->
+        <div class="letter-paper" id="letter-display">
+          <div class="letter-recipient" id="pv-recipient">과천시장님께</div>
+          
+          <div class="letter-body">
+            안녕하세요. 저는 과천시에서 생활하는 초등학생 <span class="letter-highlight" id="pv-name">○○○</span>입니다.<br>
+            더 살기 좋은 과천시를 위해 제안하고 싶은 일이 있습니다.
+          </div>
+
+          <div class="letter-body" id="pv-problem">
+            과천시의 (장소)에서 (문제)하는 문제가 있습니다.
+          </div>
+
+          <div class="letter-body">
+            이 문제를 해결하기 위해 다음과 같이 제안합니다.<br>
+            <strong style="color: #1e40af;" id="pv-proposal">
+              (여러분의 제안 내용이 여기에 들어갑니다)
+            </strong>
+          </div>
+
+          <div class="letter-body">
+            그 까닭은 다음과 같습니다.<br>
+            첫째, <span id="pv-reason1">(첫 번째 까닭이 여기에 들어갑니다)</span><br>
+            <span id="pv-reason2-block" style="display: none;">
+              둘째, <span id="pv-reason2">(두 번째 까닭이 여기에 들어갑니다)</span>
+            </span>
+          </div>
+
+          <div class="letter-body">
+            제 의견을 살펴봐 주셔서 감사합니다.
+          </div>
+
+          <div class="letter-date-signature">
+            <div id="pv-date">2026년 10월 7일</div>
+            <div style="margin-top: 6px;">
+              <span id="pv-team">○</span>모둠 <span id="pv-sig-name">○○○</span> 올림
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4단계: 글 점검하기 -->
+      <section class="card" id="step4-card">
+        <h2 class="card-title">
+          <span>4단계: 글 점검하기 (자가 평가)</span>
+        </h2>
+        <p class="card-help">
+          게시판에 올리기 전에 내 글이 좋은 제안인지 3가지 질문을 스스로 점검해 보세요. 세 가지 모두 확인해야 제출할 수 있어요!
+        </p>
+
+        <div class="checklist-item" id="chk-item-1">
+          <div class="checklist-box">✓</div>
+          <span class="checklist-label">1. 문제상황이 분명하고 구체적인가요?</span>
+        </div>
+
+        <div class="checklist-item" id="chk-item-2">
+          <div class="checklist-box">✓</div>
+          <span class="checklist-label">2. 실제로 실천할 수 있는 현실적인 제안인가요?</span>
+        </div>
+
+        <div class="checklist-item" id="chk-item-3">
+          <div class="checklist-box">✓</div>
+          <span class="checklist-label">3. 까닭이 제안과 잘 어울리고 설득력이 있나요?</span>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <button type="submit" class="btn btn-primary" id="btn-submit-proposal" disabled>
+            <span>📮 과천시 제안 게시판에 올리기</span>
+          </button>
+        </div>
+      </section>
+
+    </form>
+
+    <!-- 완료 성공 화면 -->
+    <div id="success-card" class="success-card" style="display: none;">
+      <div class="success-icon">🎉</div>
+      <h2 class="success-title">과천시를 위한 제안이 게시판에 올라갔어요!</h2>
+      <p class="success-desc">
+        친구들의 제안도 함께 읽어보고, 실천할 수 있는 멋진 생각에 공감과 따뜻한 댓글을 남겨봅시다.
+      </p>
+      
+      <div style="max-width: 360px; margin: 0 auto;">
+        <a href="board.html" class="btn btn-primary">
+          💙 공감 게시판으로 바로 가기
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import {
+      subscribeResponses,
+      addProposal,
+      validateInputs,
+      getMyTeam,
+      setMyTeam,
+      showToast,
+      speakText,
+      stopSpeaking,
+      injectConfigNotice
+    } from './app.js';
+
+    injectConfigNotice();
+
+    // DOM 요소 참조
+    const form = document.getElementById('write-form');
+    const successCard = document.getElementById('success-card');
+    const btnSubmit = document.getElementById('btn-submit-proposal');
+
+    const teamSelector = document.getElementById('team-selector');
+    const inputTeam = document.getElementById('input-team');
+    const inputName = document.getElementById('input-name');
+
+    const recProblemsGrid = document.getElementById('recommended-problems-grid');
+    const btnCustomProblem = document.getElementById('btn-custom-problem');
+
+    const recipientGrid = document.getElementById('recipient-grid');
+    const inputRecipient = document.getElementById('input-recipient');
+    const inputProblem = document.getElementById('input-problem');
+    const inputProposal = document.getElementById('input-proposal');
+    const inputReason1 = document.getElementById('input-reason1');
+    const inputReason2 = document.getElementById('input-reason2');
+
+    // 미리보기 요소
+    const pvRecipient = document.getElementById('pv-recipient');
+    const pvName = document.getElementById('pv-name');
+    const pvProblem = document.getElementById('pv-problem');
+    const pvProposal = document.getElementById('pv-proposal');
+    const pvReason1 = document.getElementById('pv-reason1');
+    const pvReason2 = document.getElementById('pv-reason2');
+    const pvReason2Block = document.getElementById('pv-reason2-block');
+    const pvDate = document.getElementById('pv-date');
+    const pvTeam = document.getElementById('pv-team');
+    const pvSigName = document.getElementById('pv-sig-name');
+
+    // TTS
+    const btnSpeak = document.getElementById('btn-speak');
+    const btnStopSpeak = document.getElementById('btn-stop-speak');
+
+    // 체크리스트 상태
+    const checkStates = { 1: false, 2: false, 3: false };
+
+    // 날짜 포맷
+    const today = new Date();
+    pvDate.textContent = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+    // 1. 모둠 선택 설정
+    const initialTeam = getMyTeam();
+    if (initialTeam) {
+      inputTeam.value = initialTeam;
+      const btn = teamSelector.querySelector(`[data-team="${initialTeam}"]`);
+      if (btn) btn.classList.add('selected');
+      pvTeam.textContent = initialTeam;
+    }
+
+    teamSelector.querySelectorAll('.team-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        teamSelector.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const teamNum = btn.dataset.team;
+        inputTeam.value = teamNum;
+        setMyTeam(teamNum);
+        pvTeam.textContent = teamNum;
+        checkCanSubmit();
+      });
+    });
+
+    // 2. 받는 사람 선택
+    recipientGrid.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        recipientGrid.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const val = btn.dataset.value;
+        inputRecipient.value = val;
+        pvRecipient.textContent = val;
+        checkCanSubmit();
+      });
+    });
+    // 기본 선택 (과천시장님께)
+    const defRecipient = recipientGrid.querySelector('[data-value="과천시장님께"]');
+    if (defRecipient) defRecipient.click();
+
+    // 3. 실시간 편지 미리보기 동기화
+    function syncPreview() {
+      const name = inputName.value.trim() || '○○○';
+      pvName.textContent = name;
+      pvSigName.textContent = name;
+
+      pvProblem.textContent = inputProblem.value.trim() || '과천시의 (장소)에서 (문제)하는 문제가 있습니다.';
+      pvProposal.textContent = inputProposal.value.trim() || '(여러분의 제안 내용이 여기에 들어갑니다)';
+      pvReason1.textContent = inputReason1.value.trim() || '(첫 번째 까닭이 여기에 들어갑니다)';
+
+      const r2 = inputReason2.value.trim();
+      if (r2) {
+        pvReason2Block.style.display = 'inline';
+        pvReason2.textContent = r2;
+      } else {
+        pvReason2Block.style.display = 'none';
+      }
+
+      checkCanSubmit();
+    }
+
+    inputName.addEventListener('input', syncPreview);
+    inputProblem.addEventListener('input', syncPreview);
+    inputProposal.addEventListener('input', syncPreview);
+    inputReason1.addEventListener('input', syncPreview);
+    inputReason2.addEventListener('input', syncPreview);
+
+    // 4. 4단계 체크리스트 토글
+    [1, 2, 3].forEach(idx => {
+      const item = document.getElementById(`chk-item-${idx}`);
+      item.addEventListener('click', () => {
+        checkStates[idx] = !checkStates[idx];
+        if (checkStates[idx]) {
+          item.classList.add('checked');
+        } else {
+          item.classList.remove('checked');
+        }
+        checkCanSubmit();
+      });
+    });
+
+    // 5. 제출 버튼 활성화 조건 점검
+    function checkCanSubmit() {
+      const teamOk = Boolean(inputTeam.value);
+      const nameOk = Boolean(inputName.value.trim());
+      const recipientOk = Boolean(inputRecipient.value.trim());
+      const problemOk = Boolean(inputProblem.value.trim());
+      const proposalOk = Boolean(inputProposal.value.trim());
+      const reason1Ok = Boolean(inputReason1.value.trim());
+      const checksOk = checkStates[1] && checkStates[2] && checkStates[3];
+
+      const allReady = teamOk && nameOk && recipientOk && problemOk && proposalOk && reason1Ok && checksOk;
+      btnSubmit.disabled = !allReady;
+    }
+
+    // 6. 1단계: responses 데이터 구독하여 상위 8개 문제 카드 생성
+    subscribeResponses((responses) => {
+      // '불편한 점 없음' 제외
+      const valid = responses.filter(r => r.issue && r.issue !== '불편한 점 없음' && r.location);
+      
+      // 장소 × 문제 집계
+      const counter = {};
+      const situationMap = {};
+
+      valid.forEach(r => {
+        const key = `${r.location}__${r.issue}`;
+        counter[key] = (counter[key] || 0) + 1;
+        if (r.situation && r.situation.trim()) {
+          situationMap[key] = situationMap[key] || [];
+          situationMap[key].push(r.situation.trim());
+        }
+      });
+
+      // 정렬 후 상위 8개 추출
+      const sortedKeys = Object.keys(counter).sort((a, b) => counter[b] - counter[a]).slice(0, 8);
+
+      recProblemsGrid.innerHTML = '';
+
+      if (sortedKeys.length === 0) {
+        // 응답이 아직 없을 때 추천 기본 프리셋 3가지 제공 (가상 예시)
+        const defaults = [
+          { loc: '공원·산책로', iss: '쉴 공간', count: 1, ex: '산책 중에 다리가 아파도 쉴 벤치가 부족해요.' },
+          { loc: '길·횡단보도', iss: '안전', count: 1, ex: '어린이 보호구역에 신호등이 잘 안 보여요.' },
+          { loc: '놀이터·체육시설', iss: '청결', count: 1, ex: '놀이터 쓰레기통이 넘쳐 쓰레기가 떨어져 있어요.' }
+        ];
+
+        defaults.forEach(item => {
+          renderRecCard(item.loc, item.iss, item.count, [item.ex], false);
+        });
+        return;
+      }
+
+      sortedKeys.forEach(k => {
+        const [loc, iss] = k.split('__');
+        const count = counter[k];
+        const situations = situationMap[k] || [];
+        renderRecCard(loc, iss, count, situations.slice(0, 2), true);
+      });
+    });
+
+    function renderRecCard(loc, iss, count, examples, isRealClass) {
+      const card = document.createElement('div');
+      card.className = 'problem-rec-card';
+      
+      let exHtml = '';
+      if (examples && examples.length > 0) {
+        exHtml = examples.map(ex => `
+          <div class="ref-example-box">
+            ${isRealClass ? '<strong style="color: #2563eb;">🏷️ 우리 반 응답:</strong> ' : '<strong style="color: #64748b;">(예시):</strong> '}
+            “${ex}”
+          </div>
+        `).join('');
+      }
+
+      card.innerHTML = `
+        <div class="problem-card-count">${count}명이 답했어요</div>
+        <div style="font-weight: 700; font-size: 1.05rem; color: #1e3a8a;">
+          ${loc} · ${iss}
+        </div>
+        <div style="font-size: 0.9rem; color: #64748b;">
+          ${loc}에서 ${iss} 때문에 불편함을 겪고 있어요.
+        </div>
+        ${exHtml}
+      `;
+
+      card.addEventListener('click', () => {
+        recProblemsGrid.querySelectorAll('.problem-rec-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
+        // 자동 문장 채우기
+        inputProblem.value = `과천시의 ${loc}에서 ${iss} 문제로 인해 생활에 불편을 느끼는 문제가 있습니다.`;
+        syncPreview();
+        showToast(`'${loc} · ${iss}' 문제가 입력되었습니다!`, 'success');
+        document.getElementById('step2-card').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      recProblemsGrid.appendChild(card);
+    }
+
+    btnCustomProblem.addEventListener('click', () => {
+      recProblemsGrid.querySelectorAll('.problem-rec-card').forEach(c => c.classList.remove('selected'));
+      inputProblem.value = '';
+      syncPreview();
+      document.getElementById('step2-card').scrollIntoView({ behavior: 'smooth' });
+      inputProblem.focus();
+      showToast('문제상황을 직접 입력해 주세요.', 'info');
+    });
+
+    // 7. 소리 내어 읽기 (TTS)
+    if (!('speechSynthesis' in window)) {
+      document.getElementById('speech-controls-wrapper').style.display = 'none';
+    } else {
+      btnSpeak.addEventListener('click', () => {
+        const textToRead = `
+          ${pvRecipient.textContent}.
+          안녕하세요. 저는 과천시에서 생활하는 초등학생 ${pvName.textContent}입니다.
+          더 살기 좋은 과천시를 위해 제안하고 싶은 일이 있습니다.
+          ${pvProblem.textContent}
+          이 문제를 해결하기 위해 다음과 같이 제안합니다.
+          ${pvProposal.textContent}
+          그 까닭은 다음과 같습니다.
+          첫째, ${pvReason1.textContent}.
+          ${inputReason2.value.trim() ? '둘째, ' + pvReason2.textContent + '.' : ''}
+          제 의견을 살펴봐 주셔서 감사합니다.
+        `;
+        const ok = speakText(textToRead);
+        if (ok) {
+          btnSpeak.style.display = 'none';
+          btnStopSpeak.style.display = 'inline-flex';
+        }
+      });
+
+      btnStopSpeak.addEventListener('click', () => {
+        stopSpeaking();
+        btnStopSpeak.style.display = 'none';
+        btnSpeak.style.display = 'inline-flex';
+      });
+    }
+
+    // 8. 폼 제출
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const team = inputTeam.value;
+      const name = inputName.value.trim();
+      const recipient = inputRecipient.value.trim();
+      const problem = inputProblem.value.trim();
+      const proposal = inputProposal.value.trim();
+      const reason1 = inputReason1.value.trim();
+      const reason2 = inputReason2.value.trim();
+
+      // 욕설 필터 검사
+      const check = validateInputs(name, problem, proposal, reason1, reason2);
+      if (!check.ok) {
+        showToast(check.message, 'error');
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<span>⏳ 게시판에 올리는 중...</span>';
+
+      try {
+        await addProposal({
+          team,
+          name,
+          recipient,
+          problem,
+          proposal,
+          reason1,
+          reason2
+        });
+
+        stopSpeaking();
+        form.style.display = 'none';
+        successCard.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error(err);
+        showToast('저장에 실패했습니다. 다시 시도해 주세요.', 'error');
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<span>📮 과천시 제안 게시판에 올리기</span>';
+      }
+    });
+
+  </script>
+
+</body>
+</html>

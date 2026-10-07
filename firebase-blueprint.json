@@ -1,0 +1,134 @@
+{
+  "entities": {
+    "Response": {
+      "title": "Response",
+      "description": "과천시 생활 속 불편함 탐정단 도입 설문 응답",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "불편함을 겪은 과천시 장소",
+          "maxLength": 100
+        },
+        "issue": {
+          "type": "string",
+          "description": "가장 불편했던 점 유형",
+          "maxLength": 100
+        },
+        "situation": {
+          "type": "string",
+          "description": "불편했던 구체적인 상황 설명",
+          "maxLength": 150
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time",
+          "description": "제출 시간"
+        }
+      },
+      "required": ["issue", "ts"]
+    },
+    "Proposal": {
+      "title": "Proposal",
+      "description": "더 살기 좋은 과천시를 위해 제안하는 편지 글",
+      "type": "object",
+      "properties": {
+        "team": {
+          "type": "integer",
+          "description": "작성 모둠 번호 (1~6)"
+        },
+        "name": {
+          "type": "string",
+          "description": "작성자 이름 또는 별명",
+          "maxLength": 40
+        },
+        "recipient": {
+          "type": "string",
+          "description": "받는 사람",
+          "maxLength": 50
+        },
+        "problem": {
+          "type": "string",
+          "description": "과천시의 문제 상황",
+          "maxLength": 300
+        },
+        "proposal": {
+          "type": "string",
+          "description": "해결을 위한 구체적인 제안",
+          "maxLength": 300
+        },
+        "reason1": {
+          "type": "string",
+          "description": "첫 번째 까닭",
+          "maxLength": 300
+        },
+        "reason2": {
+          "type": "string",
+          "description": "두 번째 까닭 (선택)",
+          "maxLength": 300
+        },
+        "likes": {
+          "type": "integer",
+          "description": "친구들의 공감 수 (초기 0)"
+        },
+        "submitted": {
+          "type": "boolean",
+          "description": "제출 완료 플래그"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time",
+          "description": "등록 시간"
+        }
+      },
+      "required": ["team", "name", "recipient", "problem", "proposal", "reason1", "likes", "submitted", "ts"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "제안에 대한 좋은 점 또는 보완할 점 피드백 댓글",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["good", "improve"],
+          "description": "댓글 유형"
+        },
+        "team": {
+          "type": "integer",
+          "description": "작성 모둠 번호"
+        },
+        "content": {
+          "type": "string",
+          "description": "댓글 내용",
+          "maxLength": 200
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time",
+          "description": "등록 시간"
+        }
+      },
+      "required": ["type", "team", "content", "ts"]
+    }
+  },
+  "firestore": {
+    "/responses/{responseId}": {
+      "schema": {
+        "$ref": "#/entities/Response"
+      },
+      "description": "학생들의 과천시 불편함 설문 응답 모음"
+    },
+    "/proposals/{proposalId}": {
+      "schema": {
+        "$ref": "#/entities/Proposal"
+      },
+      "description": "과천시를 위한 제안하는 글 모음"
+    },
+    "/proposals/{proposalId}/comments/{commentId}": {
+      "schema": {
+        "$ref": "#/entities/Comment"
+      },
+      "description": "제안에 달린 친구들의 피드백 댓글 서브컬렉션"
+    }
+  }
+}

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>우리 반이 찾은 과천시의 불편함 | 교사용 설문 결과</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* TV 화면용 추가 스타일 */
+    .tv-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #ffffff;
+      border: 2px solid var(--color-pastel-blue);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-value {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+    .stat-label {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+    .toolbar .btn {
+      width: auto;
+      min-height: 48px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+    .chart-container {
+      position: relative;
+      height: 340px;
+      width: 100%;
+    }
+    .teacher-situation-item {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .teacher-situation-item.broadcasted {
+      background: #ecfdf5;
+      border-color: #6ee7b7;
+    }
+    .tv-winner-box {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .winner-rank {
+      font-size: 4.5rem;
+      margin-bottom: 8px;
+    }
+    .winner-title {
+      font-family: var(--font-title);
+      font-size: 2.8rem;
+      color: #1e3a8a;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .winner-count {
+      font-size: 1.8rem;
+      color: #2563eb;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 네비게이션 -->
+  <header class="top-nav">
+    <a href="index.html" class="nav-brand">
+      <span>🏙️ 과천시 수업</span>
+      <span class="badge">화면 2 · 교사용</span>
+    </a>
+    <div class="nav-actions">
+      <a href="index.html" class="btn-home">
+        <span>🏠 처음으로</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-container wide">
+    
+    <!-- 페이지 헤더 -->
+    <section class="page-header">
+      <div class="category-badge">활동 1 · 설문 결과 분석</div>
+      <h1>📊 우리 반이 찾은 과천시의 불편함</h1>
+      <p class="subtitle">우리 반 탐정단이 찾아낸 과천시의 다양한 생각들을 실시간으로 살펴봐요.</p>
+    </section>
+
+    <!-- 안내 문구 배너 -->
+    <div class="banner notice">
+      <span class="banner-icon">ℹ️</span>
+      <div class="banner-text">
+        <strong>결과 안내:</strong> 이 결과는 우리 반 학생들이 답한 내용이에요. 과천시 전체 시민의 의견을 나타내는 것은 아니에요.
+      </div>
+    </div>
+
+    <!-- 교사 조작 툴바 -->
+    <div class="toolbar">
+      <button class="btn btn-secondary" id="btn-toggle-mask">
+        <span id="mask-btn-text">🙈 결과 가리기</span>
+      </button>
+      <button class="btn btn-primary" id="btn-show-top">
+        <span>🏆 가장 많이 나온 문제 보기</span>
+      </button>
+      <button class="btn btn-secondary" id="btn-toggle-situations">
+        <span>💬 학생 상황 글 검토 / 공개</span>
+      </button>
+      <button class="btn btn-danger" id="btn-clear-all" style="margin-left: auto;">
+        <span>🗑️ 응답 모두 지우기</span>
+      </button>
+    </div>
+
+    <!-- 가림막 오버레이 (학생들이 작성 중일 때) -->
+    <div id="blind-screen" class="card" style="display: none; text-align: center; padding: 60px 20px;">
+      <div style="font-size: 4rem; margin-bottom: 16px;">🕵️‍♂️</div>
+      <h2 style="font-family: var(--font-title); font-size: 2rem; color: #1e3a8a; margin-bottom: 10px;">
+        탐정단 활동이 진행 중입니다
+      </h2>
+      <p style="font-size: 1.15rem; color: #64748b;">
+        학생들의 응답이 실시간으로 모이고 있어요.<br>준비가 되면 상단의 <strong>[결과 보이기]</strong>를 눌러주세요!
+      </p>
+      <div style="margin-top: 24px; font-size: 1.3rem; font-weight: 700; color: #2563eb;">
+        현재 모인 응답: <span id="blind-count">0</span>개
+      </div>
+    </div>
+
+    <!-- 메인 대시보드 콘텐츠 영역 -->
+    <div id="dashboard-content">
+      
+      <!-- 핵심 통계 숫자 카드 -->
+      <div class="tv-stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">총 참여 탐정 수</div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div style="font-size: 0.9rem; color: #64748b;">과천시 불편함 응답 총합</div>
+        </div>
+        <div class="stat-card" style="border-color: #bbf7d0;">
+          <div class="stat-label">😊 특별히 불편함 없음</div>
+          <div class="stat-value" id="stat-no-problem" style="color: #16a34a;">0</div>
+          <div style="font-size: 0.88rem; color: #15803d;">살기 좋은 과천시 체감 학생</div>
+        </div>
+        <div class="stat-card" style="border-color: #fde68a;">
+          <div class="stat-label">가장 많이 나온 문제</div>
+          <div class="stat-value" id="stat-top-issue" style="font-size: 1.8rem; color: #b45309; margin: 16px 0;">-</div>
+          <div style="font-size: 0.9rem; color: #92400e;" id="stat-top-issue-count">0건</div>
+        </div>
+        <div class="stat-card" style="border-color: #c7d2fe;">
+          <div class="stat-label">가장 많이 지목된 장소</div>
+          <div class="stat-value" id="stat-top-location" style="font-size: 1.8rem; color: #4338ca; margin: 16px 0;">-</div>
+          <div style="font-size: 0.9rem; color: #3730a3;" id="stat-top-location-count">0건</div>
+        </div>
+      </div>
+
+      <!-- 차트 영역: 2열 그리드 -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; margin-bottom: 24px;">
+        
+        <!-- 문제 유형별 그래프 -->
+        <div class="card" style="margin-bottom: 0;">
+          <h2 class="card-title">
+            <span>🚨 문제 유형별 순위</span>
+          </h2>
+          <p class="card-help">불편한 점 없음(제외)을 뺀 9가지 문제 유형입니다. 가장 많은 항목은 진한 파란색으로 표시돼요.</p>
+          <div class="chart-container">
+            <canvas id="chart-issues"></canvas>
+          </div>
+        </div>
+
+        <!-- 장소별 그래프 -->
+        <div class="card" style="margin-bottom: 0;">
+          <h2 class="card-title">
+            <span>📍 장소별 분포</span>
+          </h2>
+          <p class="card-help">우리 반 학생들이 불편함을 마주친 과천시의 주요 장소 순위입니다.</p>
+          <div class="chart-container">
+            <canvas id="chart-locations"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 장소 × 문제 유형 히트맵 표 -->
+      <div class="card">
+        <h2 class="card-title">
+          <span>🗺️ 장소 × 문제 유형 종합 히트맵 표</span>
+        </h2>
+        <p class="card-help">
+          어느 장소에서 어떤 문제가 집중적으로 나타나는지 색상의 진하기로 확인해 보세요. (숫자가 클수록 더 짙은 파란색)
+        </p>
+        
+        <div class="heatmap-table-wrapper">
+          <table class="heatmap-table" id="heatmap-table">
+            <thead>
+              <tr id="heatmap-head-row">
+                <th>장소 \ 문제</th>
+                <!-- 동적으로 헤더 채움 -->
+              </tr>
+            </thead>
+            <tbody id="heatmap-body">
+              <!-- 동적으로 표 행 채움 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 학생 상황 글 공유 패널 (화면에 띄우기 기능) -->
+      <div class="card" id="situation-panel" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <h2 class="card-title" style="margin-bottom: 2px;">
+              <span>💬 학생들의 실제 상황 글 (교사 검토 및 교실 화면 공개)</span>
+            </h2>
+            <p class="card-help" style="margin-bottom: 0;">
+              선생님이 먼저 읽어보신 후 <strong>[화면에 띄우기]</strong>를 누르면 TV 화면 상단에 강조되어 함께 읽을 수 있습니다.
+            </p>
+          </div>
+          <button class="btn btn-secondary" id="btn-hide-broadcasted" style="width: auto; padding: 6px 14px; font-size: 0.9rem;">
+            전체 띄우기 해제
+          </button>
+        </div>
+
+        <!-- 현재 화면에 띄워진 추천 글 배너 -->
+        <div id="broadcast-display" style="display: none; margin-bottom: 18px; padding: 20px; background: #ecfdf5; border: 2px solid #10b981; border-radius: var(--radius-md);">
+          <div style="font-weight: 700; color: #047857; margin-bottom: 6px; font-size: 1.05rem;">
+            📺 지금 TV 화면에 공유 중인 상황 이야기:
+          </div>
+          <div id="broadcast-text" style="font-size: 1.35rem; font-family: var(--font-title); color: #064e3b; line-height: 1.6;">
+            -
+          </div>
+        </div>
+
+        <div id="situation-list" style="max-height: 400px; overflow-y: auto;">
+          <!-- 동적으로 생성 -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- 가장 많이 나온 문제 대형 공개 모달 (TV 전체화면) -->
+  <div id="top-modal" class="tv-overlay" style="display: none;">
+    <div class="tv-modal">
+      <button class="tv-close" id="btn-close-top">✕</button>
+      <div class="tv-winner-box">
+        <div class="winner-rank">👑</div>
+        <div style="font-size: 1.25rem; font-weight: 700; color: #64748b; margin-bottom: 12px;">
+          우리 반이 뽑은 과천시 최우선 해결 과제
+        </div>
+        <div class="winner-title" id="winner-issue-name">
+          -
+        </div>
+        <div class="winner-count" id="winner-issue-detail">
+          0명 응답
+        </div>
+        <div id="winner-ties-notice" style="display: none; margin-top: 16px; background: #fef3c7; color: #b45309; padding: 10px 18px; border-radius: 9999px; font-weight: 700; display: inline-block;">
+          🤝 공동 1위 항목이 함께 있어요!
+        </div>
+        <p style="margin-top: 28px; font-size: 1.15rem; color: #475569; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+          “이 문제를 어떻게 해결하면 좋을지, 3단계 활동에서 과천시장님과 담당자님께 제안하는 편지를 써 봅시다!”
+        </p>
+        <div style="margin-top: 24px;">
+          <a href="write.html" class="btn btn-primary" style="display: inline-flex; width: auto; padding: 14px 32px;">
+            ✍️ 제안하는 글쓰기로 바로 이동하기
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { subscribeResponses, clearAllResponses, showToast, showConfirm, injectConfigNotice } from './app.js';
+
+    injectConfigNotice();
+
+    const ALL_ISSUES = [
+      '소음', '안전', '청결', '이동', '시설·도구',
+      '쉴 공간', '함께 이용하기', '배려', '기타'
+    ];
+
+    const ALL_LOCATIONS = [
+      '길·횡단보도', '공원·산책로', '놀이터·체육시설',
+      '도서관', '버스정류장·지하철역', '공공시설·공중화장실', '그 밖의 장소'
+    ];
+
+    let currentResponses = [];
+    let isMasked = false;
+    let broadcastedSituation = null;
+
+    // 차트 인스턴스
+    let issueChart = null;
+    let locationChart = null;
+
+    // DOM 요소
+    const statTotal = document.getElementById('stat-total');
+    const statNoProblem = document.getElementById('stat-no-problem');
+    const statTopIssue = document.getElementById('stat-top-issue');
+    const statTopIssueCount = document.getElementById('stat-top-issue-count');
+    const statTopLocation = document.getElementById('stat-top-location');
+    const statTopLocationCount = document.getElementById('stat-top-location-count');
+
+    const blindScreen = document.getElementById('blind-screen');
+    const blindCount = document.getElementById('blind-count');
+    const dashboardContent = document.getElementById('dashboard-content');
+    const btnToggleMask = document.getElementById('btn-toggle-mask');
+    const maskBtnText = document.getElementById('mask-btn-text');
+
+    const btnShowTop = document.getElementById('btn-show-top');
+    const topModal = document.getElementById('top-modal');
+    const btnCloseTop = document.getElementById('btn-close-top');
+    const winnerIssueName = document.getElementById('winner-issue-name');
+    const winnerIssueDetail = document.getElementById('winner-issue-detail');
+    const winnerTiesNotice = document.getElementById('winner-ties-notice');
+
+    const btnToggleSituations = document.getElementById('btn-toggle-situations');
+    const situationPanel = document.getElementById('situation-panel');
+    const situationList = document.getElementById('situation-list');
+    const broadcastDisplay = document.getElementById('broadcast-display');
+    const broadcastText = document.getElementById('broadcast-text');
+    const btnHideBroadcasted = document.getElementById('btn-hide-broadcasted');
+
+    const btnClearAll = document.getElementById('btn-clear-all');
+
+    // 차트 초기화
+    function initCharts() {
+      const ctxIssues = document.getElementById('chart-issues').getContext('2d');
+      issueChart = new Chart(ctxIssues, {
+        type: 'bar',
+        data: {
+          labels: ALL_ISSUES,
+          datasets: [{
+            label: '응답 수 (명)',
+            data: ALL_ISSUES.map(() => 0),
+            backgroundColor: '#93c5fd',
+            borderColor: '#2563eb',
+            borderWidth: 1.5,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1, precision: 0 }
+            }
+          }
+        }
+      });
+
+      const ctxLocations = document.getElementById('chart-locations').getContext('2d');
+      locationChart = new Chart(ctxLocations, {
+        type: 'bar',
+        data: {
+          labels: ALL_LOCATIONS,
+          datasets: [{
+            label: '응답 수 (명)',
+            data: ALL_LOCATIONS.map(() => 0),
+            backgroundColor: '#bae6fd',
+            borderColor: '#0284c7',
+            borderWidth: 1.5,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1, precision: 0 }
+            }
+          }
+        }
+      });
+    }
+
+    // 히트맵 테이블 초기 뼈대 렌더링
+    function buildHeatmapStructure() {
+      const headRow = document.getElementById('heatmap-head-row');
+      headRow.innerHTML = '<th>장소 \\ 문제 유형</th>' + ALL_ISSUES.map(i => `<th>${i}</th>`).join('') + '<th>합계</th>';
+
+      const tbody = document.getElementById('heatmap-body');
+      tbody.innerHTML = '';
+      ALL_LOCATIONS.forEach(loc => {
+        const tr = document.createElement('tr');
+        tr.id = `hm-row-${encodeURIComponent(loc)}`;
+        tr.innerHTML = `<th style="text-align: left; background: #f8fafc; font-weight: 700;">${loc}</th>` +
+          ALL_ISSUES.map(iss => `<td class="heatmap-cell" id="hm-${encodeURIComponent(loc)}-${encodeURIComponent(iss)}">0</td>`).join('') +
+          `<td id="hm-total-${encodeURIComponent(loc)}" style="font-weight: 800; background: #f8fafc;">0</td>`;
+        tbody.appendChild(tr);
+      });
+
+      // 열 합계 행
+      const totalTr = document.createElement('tr');
+      totalTr.innerHTML = '<th style="background: #e2e8f0; font-weight: 800;">총합</th>' +
+        ALL_ISSUES.map(iss => `<td id="hm-col-total-${encodeURIComponent(iss)}" style="font-weight: 800; background: #f1f5f9;">0</td>`).join('') +
+        '<td id="hm-grand-total" style="font-weight: 900; background: #e0f2fe; color: #1e40af;">0</td>';
+      tbody.appendChild(totalTr);
+    }
+
+    // 전체 데이터 반영
+    function updateDashboard(responses) {
+      currentResponses = responses;
+      blindCount.textContent = responses.length;
+      statTotal.textContent = responses.length;
+
+      // 1. '불편한 점 없음' 분리
+      const noProblemList = responses.filter(r => r.issue === '불편한 점 없음');
+      statNoProblem.textContent = noProblemList.length;
+
+      // 분석 대상 (불편한 점 없음 제외)
+      const validResponses = responses.filter(r => r.issue && r.issue !== '불편한 점 없음');
+
+      // 2. 문제 유형 집계
+      const issueCounts = {};
+      ALL_ISSUES.forEach(i => issueCounts[i] = 0);
+      validResponses.forEach(r => {
+        if (issueCounts[r.issue] !== undefined) {
+          issueCounts[r.issue]++;
+        }
+      });
+
+      // 3. 장소별 집계
+      const locationCounts = {};
+      ALL_LOCATIONS.forEach(l => locationCounts[l] = 0);
+      validResponses.forEach(r => {
+        if (locationCounts[r.location] !== undefined) {
+          locationCounts[r.location]++;
+        }
+      });
+
+      // 4. 최다 항목 계산 및 하이라이트
+      let maxIssueCount = 0;
+      let topIssues = [];
+      ALL_ISSUES.forEach(iss => {
+        const count = issueCounts[iss];
+        if (count > maxIssueCount) {
+          maxIssueCount = count;
+          topIssues = [iss];
+        } else if (count === maxIssueCount && count > 0) {
+          topIssues.push(iss);
+        }
+      });
+
+      if (maxIssueCount > 0) {
+        statTopIssue.textContent = topIssues.join(', ');
+        statTopIssueCount.textContent = `${maxIssueCount}건 응답`;
+      } else {
+        statTopIssue.textContent = '-';
+        statTopIssueCount.textContent = '0건';
+      }
+
+      let maxLocationCount = 0;
+      let topLocations = [];
+      ALL_LOCATIONS.forEach(loc => {
+        const count = locationCounts[loc];
+        if (count > maxLocationCount) {
+          maxLocationCount = count;
+          topLocations = [loc];
+        } else if (count === maxLocationCount && count > 0) {
+          topLocations.push(loc);
+        }
+      });
+
+      if (maxLocationCount > 0) {
+        statTopLocation.textContent = topLocations.join(', ');
+        statTopLocationCount.textContent = `${maxLocationCount}건 지목`;
+      } else {
+        statTopLocation.textContent = '-';
+        statTopLocationCount.textContent = '0건';
+      }
+
+      // 5. 차트 업데이트 (가장 많은 항목 진한 색 강조)
+      if (issueChart) {
+        const bgColors = ALL_ISSUES.map(iss => {
+          if (maxIssueCount > 0 && issueCounts[iss] === maxIssueCount) {
+            return '#1d4ed8'; // 1위 강조: 진한 파랑
+          }
+          return '#93c5fd';
+        });
+        issueChart.data.datasets[0].data = ALL_ISSUES.map(iss => issueCounts[iss]);
+        issueChart.data.datasets[0].backgroundColor = bgColors;
+        issueChart.update();
+      }
+
+      if (locationChart) {
+        const bgColors = ALL_LOCATIONS.map(loc => {
+          if (maxLocationCount > 0 && locationCounts[loc] === maxLocationCount) {
+            return '#0369a1'; // 1위 강조: 진한 청록/파랑
+          }
+          return '#bae6fd';
+        });
+        locationChart.data.datasets[0].data = ALL_LOCATIONS.map(loc => locationCounts[loc]);
+        locationChart.data.datasets[0].backgroundColor = bgColors;
+        locationChart.update();
+      }
+
+      // 6. 히트맵 표 업데이트
+      const crossMatrix = {};
+      ALL_LOCATIONS.forEach(loc => {
+        crossMatrix[loc] = {};
+        ALL_ISSUES.forEach(iss => crossMatrix[loc][iss] = 0);
+      });
+
+      validResponses.forEach(r => {
+        if (crossMatrix[r.location] && crossMatrix[r.location][r.issue] !== undefined) {
+          crossMatrix[r.location][r.issue]++;
+        }
+      });
+
+      let maxCellVal = 0;
+      ALL_LOCATIONS.forEach(loc => {
+        ALL_ISSUES.forEach(iss => {
+          if (crossMatrix[loc][iss] > maxCellVal) maxCellVal = crossMatrix[loc][iss];
+        });
+      });
+
+      ALL_LOCATIONS.forEach(loc => {
+        let rowSum = 0;
+        ALL_ISSUES.forEach(iss => {
+          const val = crossMatrix[loc][iss];
+          rowSum += val;
+          const cell = document.getElementById(`hm-${encodeURIComponent(loc)}-${encodeURIComponent(iss)}`);
+          if (cell) {
+            cell.textContent = val;
+            if (val === 0) {
+              cell.style.backgroundColor = '#ffffff';
+              cell.style.color = '#94a3b8';
+            } else {
+              // 수치에 따라 파란색 농도 조절
+              const ratio = maxCellVal > 0 ? val / maxCellVal : 0;
+              const alpha = (0.2 + ratio * 0.8).toFixed(2);
+              cell.style.backgroundColor = `rgba(37, 99, 235, ${alpha})`;
+              cell.style.color = ratio > 0.5 ? '#ffffff' : '#1e3a8a';
+            }
+          }
+        });
+        const rowTotalCell = document.getElementById(`hm-total-${encodeURIComponent(loc)}`);
+        if (rowTotalCell) rowTotalCell.textContent = rowSum;
+      });
+
+      // 열 합계 및 종합 총합
+      ALL_ISSUES.forEach(iss => {
+        const colTotalCell = document.getElementById(`hm-col-total-${encodeURIComponent(iss)}`);
+        if (colTotalCell) colTotalCell.textContent = issueCounts[iss];
+      });
+      const grandTotalCell = document.getElementById(`hm-grand-total`);
+      if (grandTotalCell) grandTotalCell.textContent = validResponses.length;
+
+      // 7. 상황 글 목록 업데이트
+      renderSituations(responses);
+    }
+
+    // 상황 글 목록 렌더링
+    function renderSituations(responses) {
+      const validSituations = responses.filter(r => r.situation && r.situation.trim().length > 0);
+      
+      situationList.innerHTML = '';
+      if (validSituations.length === 0) {
+        situationList.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 24px;">작성된 상황 글이 아직 없습니다.</div>';
+        return;
+      }
+
+      validSituations.forEach(r => {
+        const item = document.createElement('div');
+        const isCurrentBroadcast = broadcastedSituation && broadcastedSituation.id === r.id;
+        item.className = `teacher-situation-item ${isCurrentBroadcast ? 'broadcasted' : ''}`;
+        item.innerHTML = `
+          <div style="flex: 1;">
+            <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 4px;">
+              <span class="badge" style="background:#eff6ff; color:#2563eb; padding:2px 8px; border-radius:12px;">${r.location || '장소 미지정'}</span>
+              <span class="badge" style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:12px;">${r.issue}</span>
+            </div>
+            <div style="font-size: 1.05rem; font-weight: 500; color: #1e293b;">
+              “${r.situation}”
+            </div>
+          </div>
+          <button class="btn btn-primary btn-broadcast" style="width: auto; padding: 8px 16px; font-size: 0.88rem; flex-shrink: 0;">
+            ${isCurrentBroadcast ? '✔️ 화면에 표시 중' : '📢 화면에 띄우기'}
+          </button>
+        `;
+
+        item.querySelector('.btn-broadcast').addEventListener('click', () => {
+          broadcastSituation(r);
+        });
+
+        situationList.appendChild(item);
+      });
+    }
+
+    function broadcastSituation(r) {
+      broadcastedSituation = r;
+      broadcastDisplay.style.display = 'block';
+      broadcastText.textContent = `[${r.location} · ${r.issue}] “${r.situation}”`;
+      renderSituations(currentResponses);
+      showToast('교실 TV 화면 상단에 상황 글이 공개되었습니다.', 'success');
+      broadcastDisplay.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    btnHideBroadcasted.addEventListener('click', () => {
+      broadcastedSituation = null;
+      broadcastDisplay.style.display = 'none';
+      renderSituations(currentResponses);
+    });
+
+    // 툴바 1: 결과 가리기/보이기 토글
+    btnToggleMask.addEventListener('click', () => {
+      isMasked = !isMasked;
+      if (isMasked) {
+        blindScreen.style.display = 'block';
+        dashboardContent.style.display = 'none';
+        maskBtnText.textContent = '👀 결과 보이기';
+      } else {
+        blindScreen.style.display = 'none';
+        dashboardContent.style.display = 'block';
+        maskBtnText.textContent = '🙈 결과 가리기';
+      }
+    });
+
+    // 툴바 2: 최다 문제 발표 모달
+    btnShowTop.addEventListener('click', () => {
+      const validResponses = currentResponses.filter(r => r.issue && r.issue !== '불편한 점 없음');
+      if (validResponses.length === 0) {
+        showToast('아직 집계할 수 있는 응답이 없습니다.', 'warning');
+        return;
+      }
+
+      const counts = {};
+      ALL_ISSUES.forEach(i => counts[i] = 0);
+      validResponses.forEach(r => counts[r.issue] = (counts[r.issue] || 0) + 1);
+
+      let max = 0;
+      let tops = [];
+      ALL_ISSUES.forEach(i => {
+        if (counts[i] > max) {
+          max = counts[i];
+          tops = [i];
+        } else if (counts[i] === max && max > 0) {
+          tops.push(i);
+        }
+      });
+
+      winnerIssueName.textContent = tops.join(' & ');
+      winnerIssueDetail.textContent = `우리 반 ${max}명이 가장 큰 문제로 선택했어요!`;
+      winnerTiesNotice.style.display = tops.length > 1 ? 'inline-block' : 'none';
+
+      topModal.style.display = 'flex';
+    });
+
+    btnCloseTop.addEventListener('click', () => {
+      topModal.style.display = 'none';
+    });
+
+    // 툴바 3: 상황 글 패널 토글
+    btnToggleSituations.addEventListener('click', () => {
+      const isHidden = situationPanel.style.display === 'none';
+      situationPanel.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) {
+        situationPanel.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    // 툴바 4: 2단계 안전 삭제 확인
+    btnClearAll.addEventListener('click', () => {
+      showConfirm(
+        '⚠️ 1차 확인: 응답 모두 지우기',
+        '현재까지 학생들이 제출한 모든 설문 응답을 삭제하시겠습니까? 수업 전 연습 데이터를 정리할 때만 사용하세요.',
+        () => {
+          // 2차 확인
+          showConfirm(
+            '🚨 2차 최종 확인: 정말로 삭제합니까?',
+            '삭제된 설문 데이터는 복구할 수 없습니다. 계속 진행하시겠습니까?',
+            async () => {
+              try {
+                await clearAllResponses();
+                showToast('모든 설문 응답이 깨끗하게 정리되었습니다.', 'success');
+              } catch (err) {
+                console.error(err);
+                showToast('삭제 중 오류가 발생했습니다.', 'error');
+              }
+            }
+          );
+        }
+      );
+    });
+
+    // 초기 실행
+    initCharts();
+    buildHeatmapStructure();
+
+    // Firestore 실시간 구독
+    subscribeResponses((data) => {
+      updateDashboard(data);
+    }, (err) => {
+      showToast('실시간 데이터를 불러오는 중 오류가 발생했습니다.', 'error');
+    });
+
+  </script>
+
+</body>
+</html>

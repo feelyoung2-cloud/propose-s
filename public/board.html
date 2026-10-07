@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>과천시를 위한 생각에 공감해요 | 공감 게시판</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .team-filter-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: var(--radius-full);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .filter-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+    .quick-comment-chip {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 4px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.15s ease;
+      display: inline-block;
+      margin: 2px;
+    }
+    .quick-comment-chip:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    .top-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #fef3c7;
+      color: #b45309;
+      border: 1.5px solid #fde68a;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+    .gold-badge {
+      background: #fef08a;
+      color: #854d0e;
+      border-color: #eab308;
+    }
+    .silver-badge {
+      background: #e2e8f0;
+      color: #334155;
+      border-color: #94a3b8;
+    }
+    .teacher-top-card {
+      border: 3px solid #93c5fd;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      background: #ffffff;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 네비게이션 -->
+  <header class="top-nav">
+    <a href="index.html" class="nav-brand">
+      <span>🏙️ 과천시 수업</span>
+      <span class="badge" id="screen-badge">화면 4</span>
+    </a>
+    <div class="nav-actions">
+      <!-- 교사용 모드 전환 스위치 -->
+      <a href="board.html" id="link-student-mode" class="badge" style="display:none; text-decoration:none; background:#ffffff; color:#2563eb; padding:6px 12px; border:1px solid #bfdbfe;">
+        학생용 화면 보기
+      </a>
+      <a href="board.html?role=teacher" id="link-teacher-mode" class="badge" style="text-decoration:none; background:#ffffff; color:#b45309; padding:6px 12px; border:1px solid #fde68a;">
+        교사용 화면 보기
+      </a>
+      <a href="index.html" class="btn-home">
+        <span>🏠 처음으로</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-container wide">
+
+    <!-- 페이지 헤더 -->
+    <section class="page-header">
+      <div class="category-badge" id="header-category">활동 4 · 공감과 응원 나누기</div>
+      <h1 id="page-title">💙 과천시를 위한 생각에 공감해요</h1>
+      <p class="subtitle" id="page-subtitle">우리 지역에 도움이 되고, 실천할 수 있다고 생각하는 친구들의 제안에 마음을 모아주세요.</p>
+    </section>
+
+    <!-- 안내 문구 배너 -->
+    <div class="banner info" id="page-banner">
+      <span class="banner-icon">💡</span>
+      <div class="banner-text" id="banner-text">
+        <strong>공감 안내:</strong> 우리 지역에 도움이 되고, 실천할 수 있다고 생각하는 제안에 공감해 주세요.
+        (친구의 제안을 꼼꼼히 읽어보고, 내 모둠이 아닌 다른 모둠의 글에 공감할 수 있어요!)
+      </div>
+    </div>
+
+    <!-- 교사용 전용 도구 모음 -->
+    <div id="teacher-toolbar" style="display: none; margin-bottom: 24px; text-align: center;">
+      <button class="btn btn-primary" id="btn-show-top-ranks" style="width: auto; padding: 12px 28px; font-size: 1.1rem; display: inline-flex;">
+        🏆 1·2위 제안 크게 보기
+      </button>
+    </div>
+
+    <!-- 학생용: 내 모둠 설정 바 -->
+    <div class="card" id="my-team-card" style="padding: 16px 20px; margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.3rem;">🎒</span>
+          <span style="font-weight: 700; color: #1e3a8a;">내 모둠:</span>
+          <select id="select-my-team" class="form-control" style="width: auto; padding: 6px 14px; font-size: 1rem; border-radius: 9999px;">
+            <option value="">모둠 선택 안 됨</option>
+            <option value="1">1모둠</option>
+            <option value="2">2모둠</option>
+            <option value="3">3모둠</option>
+            <option value="4">4모둠</option>
+            <option value="5">5모둠</option>
+            <option value="6">6모둠</option>
+          </select>
+        </div>
+        <div style="font-size: 0.9rem; color: #64748b;">
+          * 자기 모둠 글에는 공감할 수 없어요. 다른 모둠의 멋진 제안을 칭찬해 주세요!
+        </div>
+      </div>
+    </div>
+
+    <!-- 모둠 필터 탭 -->
+    <div class="team-filter-bar" id="team-filter-bar">
+      <button class="filter-btn active" data-filter="all">전체 모둠 보기</button>
+      <button class="filter-btn" data-filter="1">1모둠</button>
+      <button class="filter-btn" data-filter="2">2모둠</button>
+      <button class="filter-btn" data-filter="3">3모둠</button>
+      <button class="filter-btn" data-filter="4">4모둠</button>
+      <button class="filter-btn" data-filter="5">5모둠</button>
+      <button class="filter-btn" data-filter="6">6모둠</button>
+    </div>
+
+    <!-- 제안 카드 목록 컨테이너 -->
+    <div id="proposals-list">
+      <div style="text-align: center; color: #94a3b8; padding: 48px;">
+        제안 목록을 불러오는 중입니다...
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 교사용: 1·2위 전체화면 모달 -->
+  <div id="top-ranks-modal" class="tv-overlay" style="display: none;">
+    <div class="tv-modal">
+      <button class="tv-close" id="btn-close-top-ranks">✕</button>
+      
+      <div style="text-align: center; margin-bottom: 28px;">
+        <div style="font-size: 3rem; margin-bottom: 8px;">🌟</div>
+        <h2 style="font-family: var(--font-title); font-size: 2.2rem; color: #1e3a8a; margin-bottom: 6px;">
+          우리 반 공감 베스트 제안
+        </h2>
+        <p style="font-size: 1.05rem; color: #64748b;">
+          친구들이 가장 많이 공감한 상위 제안입니다. 공감 수와 함께 제안의 까닭과 실천 방법도 함께 살펴봅시다.
+        </p>
+      </div>
+
+      <div id="top-ranks-content">
+        <!-- 동적으로 1, 2위 카드 렌더링 -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      subscribeProposals,
+      likeProposal,
+      hasLiked,
+      markLiked,
+      getMyTeam,
+      setMyTeam,
+      subscribeComments,
+      addComment,
+      validateInputs,
+      showToast,
+      injectConfigNotice
+    } from './app.js';
+
+    injectConfigNotice();
+
+    // 1. 역할 확인 (교사용 ?role=teacher 판별)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isTeacher = urlParams.get('role') === 'teacher';
+
+    const pageTitle = document.getElementById('page-title');
+    const pageSubtitle = document.getElementById('page-subtitle');
+    const headerCategory = document.getElementById('header-category');
+    const screenBadge = document.getElementById('screen-badge');
+    const bannerText = document.getElementById('banner-text');
+    const teacherToolbar = document.getElementById('teacher-toolbar');
+    const myTeamCard = document.getElementById('my-team-card');
+    const selectMyTeam = document.getElementById('select-my-team');
+    const teamFilterBar = document.getElementById('team-filter-bar');
+    const proposalsList = document.getElementById('proposals-list');
+
+    const topRanksModal = document.getElementById('top-ranks-modal');
+    const btnShowTopRanks = document.getElementById('btn-show-top-ranks');
+    const btnCloseTopRanks = document.getElementById('btn-close-top-ranks');
+    const topRanksContent = document.getElementById('top-ranks-content');
+
+    let allProposals = [];
+    let currentFilter = 'all';
+    let myTeam = getMyTeam();
+
+    // 모드별 화면 세팅
+    if (isTeacher) {
+      document.title = '우리 반의 과천시 제안을 함께 살펴봐요 | 교사용 공감 게시판';
+      screenBadge.textContent = '화면 5 · 교사용';
+      headerCategory.textContent = '교사용 · 제안 함께 살펴보기';
+      pageTitle.textContent = '🌟 우리 반의 과천시 제안을 함께 살펴봐요';
+      pageSubtitle.textContent = '공감 수는 친구들의 생각을 알아보는 자료예요. 공감 수와 함께 제안의 실천 가능성과 까닭도 살펴봐요.';
+      bannerText.innerHTML = '<strong>교사용 안내:</strong> 공감 수는 친구들의 생각을 알아보는 자료예요. 공감 수와 함께 제안의 실천 가능성과 까닭도 살펴봐요.';
+      teacherToolbar.style.display = 'block';
+      myTeamCard.style.display = 'none';
+      document.getElementById('link-teacher-mode').style.display = 'none';
+      document.getElementById('link-student-mode').style.display = 'inline-block';
+    } else {
+      selectMyTeam.value = myTeam;
+      selectMyTeam.addEventListener('change', () => {
+        myTeam = selectMyTeam.value;
+        setMyTeam(myTeam);
+        renderProposals();
+      });
+    }
+
+    // 모둠 필터 탭
+    teamFilterBar.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        teamFilterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderProposals();
+      });
+    });
+
+    // 2. 제안 카드 렌더링
+    function renderProposals() {
+      let filtered = [...allProposals];
+
+      // 모둠 필터링
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(p => String(p.team) === currentFilter);
+      }
+
+      // 정렬: 교사용은 공감 많은 순, 학생용은 등록 최신순 (또는 기본)
+      if (isTeacher) {
+        filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      }
+
+      if (filtered.length === 0) {
+        proposalsList.innerHTML = `
+          <div class="card" style="text-align: center; padding: 48px 20px; color: #64748b;">
+            <div style="font-size: 2.5rem; margin-bottom: 12px;">📝</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: #1e3a8a;">등록된 제안이 없습니다.</div>
+            <p style="margin-top: 8px;">3단계 '제안하는 글쓰기'에서 먼저 글을 작성해 보세요!</p>
+            <div style="margin-top: 16px;">
+              <a href="write.html" class="btn btn-primary" style="display: inline-flex; width: auto; padding: 10px 24px;">
+                ✍️ 제안하는 글 쓰러 가기
+              </a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      proposalsList.innerHTML = '';
+      filtered.forEach((p, index) => {
+        const card = createProposalCard(p, index);
+        proposalsList.appendChild(card);
+      });
+    }
+
+    function createProposalCard(p, index) {
+      const card = document.createElement('article');
+      card.className = 'proposal-card';
+      card.id = `proposal-${p.id}`;
+
+      const isMyTeam = !isTeacher && myTeam && String(p.team) === String(myTeam);
+      const alreadyLiked = hasLiked(p.id);
+
+      // 교사용 순위 배지 표시
+      let rankBadgeHtml = '';
+      if (isTeacher && index === 0 && (p.likes || 0) > 0) {
+        rankBadgeHtml = `<span class="top-rank-badge gold-badge">🥇 1위</span>`;
+      } else if (isTeacher && index === 1 && (p.likes || 0) > 0) {
+        rankBadgeHtml = `<span class="top-rank-badge silver-badge">🥈 2위</span>`;
+      }
+
+      card.innerHTML = `
+        <div class="proposal-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            ${rankBadgeHtml}
+            <span class="team-badge">${p.team}모둠</span>
+            <strong style="font-size: 1.1rem; color: #1e293b;">${p.name}</strong>
+          </div>
+          <span class="recipient-badge">${p.recipient}</span>
+        </div>
+
+        <div class="proposal-problem">
+          <strong>문제상황:</strong> ${p.problem}
+        </div>
+
+        <div class="proposal-main">
+          💡 “${p.proposal}”
+        </div>
+
+        <ul class="proposal-reasons">
+          <li><strong>첫째:</strong> ${p.reason1}</li>
+          ${p.reason2 ? `<li><strong>둘째:</strong> ${p.reason2}</li>` : ''}
+        </ul>
+
+        <div class="proposal-footer">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button
+              type="button"
+              class="btn-like ${alreadyLiked ? 'liked' : ''}"
+              id="like-btn-${p.id}"
+              ${isTeacher || isMyTeam || alreadyLiked ? 'disabled' : ''}>
+              <span>${alreadyLiked ? '❤️' : '🤍'}</span>
+              <span>공감</span>
+              <strong id="like-count-${p.id}">${p.likes || 0}</strong>
+            </button>
+            ${isMyTeam ? '<span style="font-size: 0.85rem; color: #94a3b8;">(내 모둠 글)</span>' : ''}
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-toggle-comment" style="width: auto; padding: 8px 16px; font-size: 0.9rem;" id="toggle-cmt-btn-${p.id}">
+            💬 댓글 보기 (<span id="cmt-count-${p.id}">0</span>)
+          </button>
+        </div>
+
+        <!-- 댓글 섹션 (기본은 접힘, 학생/교사 공통) -->
+        <div class="comments-section" id="comments-box-${p.id}" style="display: none;">
+          ${!isTeacher ? `
+            <!-- 학생용 댓글 작성 폼 -->
+            <div style="margin-bottom: 14px; background: #ffffff; padding: 14px; border-radius: var(--radius-sm); border: 1.5px solid #cbd5e1;">
+              <div style="font-size: 0.88rem; color: #475569; margin-bottom: 8px;">
+                💡 <strong>댓글 안내:</strong> 친구를 평가하기보다 글의 좋은 점과 더 나아질 점을 써 주세요. 이름이나 개인정보는 적지 마세요.
+              </div>
+              
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <label style="display: flex; align-items: center; gap: 4px; font-weight: 700; color: #15803d; font-size: 0.95rem; cursor: pointer;">
+                  <input type="radio" name="comment-type-${p.id}" value="good" checked> 🌟 좋은 점
+                </label>
+                <label style="display: flex; align-items: center; gap: 4px; font-weight: 700; color: #b45309; font-size: 0.95rem; cursor: pointer; margin-left: 12px;">
+                  <input type="radio" name="comment-type-${p.id}" value="improve"> 💡 보완할 점
+                </label>
+              </div>
+
+              <!-- 도움 문장 버튼 -->
+              <div style="margin-bottom: 8px;">
+                <span class="quick-comment-chip" data-text="이 제안은 우리 동네를 안전하게 만드는 데 큰 도움이 될 것 같아요.">#도움이 될 것 같아요</span>
+                <span class="quick-comment-chip" data-text="까닭이 생생하고 구체적이어서 아주 설득력이 있어요.">#설득력이 있어요</span>
+                <span class="quick-comment-chip" data-text="구체적인 실천 방법을 한 가지 더 자세히 쓰면 좋겠어요.">#더 자세히 쓰면</span>
+                <span class="quick-comment-chip" data-text="다른 사람들의 입장도 함께 생각해 보면 더 좋겠어요.">#함께 생각해 보면</span>
+              </div>
+
+              <div style="display: flex; gap: 8px;">
+                <input
+                  type="text"
+                  class="form-control cmt-input"
+                  id="cmt-input-${p.id}"
+                  maxlength="100"
+                  placeholder="예: 까닭이 명확해서 과천시가 더 살기 좋아질 것 같아요!"
+                  style="font-size: 0.95rem; padding: 10px 14px;">
+                <button type="button" class="btn btn-primary btn-submit-comment" data-id="${p.id}" style="width: auto; padding: 10px 20px; font-size: 0.95rem; flex-shrink: 0;">
+                  등록
+                </button>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- 댓글 목록 -->
+          <div class="comment-list" id="comment-list-${p.id}">
+            <div style="text-align: center; color: #94a3b8; font-size: 0.88rem;">댓글을 불러오는 중...</div>
+          </div>
+        </div>
+      `;
+
+      // 공감 버튼 이벤트
+      const likeBtn = card.querySelector(`#like-btn-${p.id}`);
+      if (likeBtn && !isTeacher && !isMyTeam && !alreadyLiked) {
+        likeBtn.addEventListener('click', async () => {
+          likeBtn.disabled = true;
+          try {
+            await likeProposal(p.id);
+            markLiked(p.id);
+            likeBtn.classList.add('liked');
+            likeBtn.innerHTML = `<span>❤️</span><span>공감 완료</span><strong id="like-count-${p.id}">${(p.likes || 0) + 1}</strong>`;
+            showToast('소중한 공감을 전했어요! ❤️', 'success');
+          } catch (err) {
+            console.error(err);
+            showToast('공감 처리에 실패했습니다.', 'error');
+            likeBtn.disabled = false;
+          }
+        });
+      }
+
+      // 댓글 토글 버튼 이벤트
+      const toggleCmtBtn = card.querySelector(`#toggle-cmt-btn-${p.id}`);
+      const commentsBox = card.querySelector(`#comments-box-${p.id}`);
+      toggleCmtBtn.addEventListener('click', () => {
+        const isHidden = commentsBox.style.display === 'none';
+        commentsBox.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+          ensureCommentsSubscription(p.id);
+        }
+      });
+
+      // 학생용 빠른 문장 칩 클릭 이벤트
+      card.querySelectorAll('.quick-comment-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const input = card.querySelector(`#cmt-input-${p.id}`);
+          if (input) {
+            input.value = chip.dataset.text;
+            input.focus();
+          }
+        });
+      });
+
+      // 학생용 댓글 등록 버튼
+      const btnSubmitCmt = card.querySelector('.btn-submit-comment');
+      if (btnSubmitCmt) {
+        btnSubmitCmt.addEventListener('click', async () => {
+          const input = card.querySelector(`#cmt-input-${p.id}`);
+          const content = input.value.trim();
+          const radioGood = card.querySelector(`input[name="comment-type-${p.id}"][value="good"]`);
+          const type = (radioGood && radioGood.checked) ? 'good' : 'improve';
+
+          if (!content) {
+            showToast('댓글 내용을 입력해 주세요.', 'warning');
+            input.focus();
+            return;
+          }
+
+          if (!myTeam) {
+            showToast('상단에서 내 모둠을 먼저 선택해 주세요.', 'warning');
+            selectMyTeam.focus();
+            return;
+          }
+
+          // 욕설 필터 검사
+          const check = validateInputs(content);
+          if (!check.ok) {
+            showToast(check.message, 'error');
+            input.focus();
+            return;
+          }
+
+          btnSubmitCmt.disabled = true;
+          try {
+            await addComment(p.id, {
+              type,
+              team: parseInt(myTeam, 10),
+              content
+            });
+            input.value = '';
+            showToast('따뜻한 의견이 등록되었습니다.', 'success');
+          } catch (err) {
+            console.error(err);
+            showToast('댓글 등록에 실패했습니다.', 'error');
+          } finally {
+            btnSubmitCmt.disabled = false;
+          }
+        });
+      }
+
+      // 댓글 자동 구독 (실시간 카운트 갱신)
+      ensureCommentsSubscription(p.id);
+
+      return card;
+    }
+
+    // 각 제안별 댓글 실시간 구독 관리
+    const commentUnsubs = {};
+    function ensureCommentsSubscription(proposalId) {
+      if (commentUnsubs[proposalId]) return;
+
+      const unsub = subscribeComments(proposalId, (comments) => {
+        const countSpan = document.getElementById(`cmt-count-${proposalId}`);
+        if (countSpan) countSpan.textContent = comments.length;
+
+        const listDiv = document.getElementById(`comment-list-${proposalId}`);
+        if (!listDiv) return;
+
+        if (comments.length === 0) {
+          listDiv.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:0.88rem; padding: 10px;">아직 작성된 댓글이 없습니다.</div>';
+          return;
+        }
+
+        listDiv.innerHTML = comments.map(c => `
+          <div class="comment-bubble ${c.type === 'improve' ? 'improve' : 'good'}">
+            <div style="margin-bottom: 2px;">
+              <span class="comment-type-badge ${c.type === 'improve' ? 'improve' : 'good'}">
+                ${c.type === 'improve' ? '💡 보완할 점' : '🌟 좋은 점'}
+              </span>
+              <span style="font-size: 0.82rem; color: #64748b; font-weight: 600;">${c.team}모둠 친구의 생각</span>
+            </div>
+            <div style="color: #1e293b; font-size: 0.95rem;">
+              ${c.content}
+            </div>
+          </div>
+        `).join('');
+      });
+
+      commentUnsubs[proposalId] = unsub;
+    }
+
+    // 3. 교사용: 1·2위 전체화면 보기
+    if (isTeacher) {
+      btnShowTopRanks.addEventListener('click', () => {
+        if (allProposals.length === 0) {
+          showToast('아직 등록된 제안이 없습니다.', 'warning');
+          return;
+        }
+
+        const sorted = [...allProposals].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+        
+        topRanksContent.innerHTML = '';
+
+        if (sorted.length === 1) {
+          // 제안이 1개뿐인 경우
+          const top1 = sorted[0];
+          topRanksContent.appendChild(buildRankCard(top1, '🥇 우리 반 단독 1위 제안', (top1.likes || 0)));
+        } else {
+          // 1위와 2위 추출 (동점 처리 고려)
+          const maxLikes = sorted[0].likes || 0;
+          const firstRankList = sorted.filter(p => (p.likes || 0) === maxLikes);
+
+          // 1위 렌더링
+          firstRankList.forEach(p => {
+            const isTie = firstRankList.length > 1;
+            const title = isTie ? '🤝 공동 1위 제안' : '🥇 1위 제안';
+            topRanksContent.appendChild(buildRankCard(p, title, maxLikes));
+          });
+
+          // 2위 추출 (1위 득표수 미만인 항목 중 최댓값)
+          const remaining = sorted.filter(p => (p.likes || 0) < maxLikes);
+          if (remaining.length > 0) {
+            const secondLikes = remaining[0].likes || 0;
+            const secondRankList = remaining.filter(p => (p.likes || 0) === secondLikes);
+            
+            secondRankList.forEach(p => {
+              const isTie = secondRankList.length > 1;
+              const title = isTie ? '🤝 공동 2위 제안' : '🥈 2위 제안';
+              topRanksContent.appendChild(buildRankCard(p, title, secondLikes));
+            });
+          }
+        }
+
+        topRanksModal.style.display = 'flex';
+      });
+
+      btnCloseTopRanks.addEventListener('click', () => {
+        topRanksModal.style.display = 'none';
+      });
+    }
+
+    function buildRankCard(p, rankTitle, likes) {
+      const card = document.createElement('div');
+      card.className = 'teacher-top-card';
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 1.35rem; font-weight: 800; color: #1e40af;">
+            ${rankTitle}
+          </div>
+          <div style="font-size: 1.25rem; font-weight: 800; color: #e11d48; background: #fff1f2; padding: 4px 16px; border-radius: 9999px; border: 1.5px solid #fecdd3;">
+            ❤️ 공감 ${likes}표
+          </div>
+        </div>
+
+        <div style="margin-bottom: 10px; font-size: 1rem; color: #475569;">
+          <span class="team-badge">${p.team}모둠</span>
+          <strong style="margin-left: 6px;">${p.name}</strong>
+          <span style="margin-left: 8px; color: #64748b;">(받는 사람: ${p.recipient})</span>
+        </div>
+
+        <div style="font-family: var(--font-title); font-size: 1.6rem; font-weight: 800; color: #1e3a8a; background: #eff6ff; padding: 18px 22px; border-radius: var(--radius-md); border: 2px solid #bfdbfe; margin-bottom: 14px; line-height: 1.5;">
+          “${p.proposal}”
+        </div>
+
+        <div style="font-size: 1.05rem; color: #334155; line-height: 1.6;">
+          <div><strong>첫째 까닭:</strong> ${p.reason1}</div>
+          ${p.reason2 ? `<div style="margin-top: 4px;"><strong>둘째 까닭:</strong> ${p.reason2}</div>` : ''}
+        </div>
+      `;
+      return card;
+    }
+
+    // 4. 제안 목록 실시간 구독
+    subscribeProposals((proposals) => {
+      allProposals = proposals;
+      renderProposals();
+    }, (err) => {
+      showToast('제안 목록을 불러오는 중 오류가 발생했습니다.', 'error');
+    });
+
+  </script>
+
+</body>
+</html>
