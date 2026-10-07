@@ -79,40 +79,31 @@ export function setMyTeam(teamNumber) {
 
 // Firebase 설정 상태 확인
 let activeFirebaseConfig = null;
-let configChecked = false;
+let configPromise = null;
 
-export async function getActiveFirebaseConfig() {
-  if (configChecked) return activeFirebaseConfig;
-  configChecked = true;
-
-  // 1. AI Studio 자동 프로비저닝 설정 파일 확인
-  try {
-    const res = await fetch('/firebase-applet-config.json');
-    if (res.ok) {
-      const appletCfg = await res.json();
-      if (appletCfg && appletCfg.apiKey && appletCfg.apiKey !== 'YOUR_API_KEY') {
-        activeFirebaseConfig = appletCfg;
-        return activeFirebaseConfig;
+export function getActiveFirebaseConfig() {
+  if (!configPromise) {
+    configPromise = (async () => {
+      try {
+        const res = await fetch('/firebase-applet-config.json');
+        if (res.ok) {
+          const cfg = await res.json();
+          if (cfg?.apiKey && cfg.apiKey !== 'YOUR_API_KEY' && cfg.projectId) {
+            activeFirebaseConfig = cfg;
+            return cfg;
+          }
+        }
+      } catch (error) {
+        console.warn('설정 파일 확인 실패, 수동 설정을 확인합니다.');
       }
-    }
-  } catch (e) {
-    // 무시하고 수동 설정으로 넘어감
+      if (firebaseConfig?.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY'
+          && firebaseConfig.projectId && firebaseConfig.projectId !== 'YOUR_PROJECT_ID') {
+        activeFirebaseConfig = firebaseConfig;
+      }
+      return activeFirebaseConfig;
+    })();
   }
-
-  // 2. 수동 설정 파일(firebase-config.js) 확인
-  if (
-    firebaseConfig &&
-    firebaseConfig.apiKey &&
-    firebaseConfig.apiKey !== 'YOUR_API_KEY' &&
-    firebaseConfig.projectId &&
-    firebaseConfig.projectId !== 'YOUR_PROJECT_ID'
-  ) {
-    activeFirebaseConfig = firebaseConfig;
-    return activeFirebaseConfig;
-  }
-
-  activeFirebaseConfig = null;
-  return null;
+  return configPromise;
 }
 
 export function isFirebaseConfigured() {
@@ -139,16 +130,18 @@ const broadcastChannel = typeof BroadcastChannel !== 'undefined'
   : null;
 
 // Firebase CDN 비동기 로더
-async function initDataLayer() {
-  if (db !== null) return;
-
-  const cfg = await getActiveFirebaseConfig();
-
-  if (cfg) {
-    try {
+let dataLayerPromise = null;
+function initDataLayer() {
+  if (!dataLayerPromise) {
+    dataLayerPromise = (async () => {
+      const cfg = await getActiveFirebaseConfig();
+      if (!cfg) {
+        isRealFirebase = false;
+        console.log('💡 로컬 시뮬레이션 모드: 다른 기기와 공유되지 않습니다.');
+        return;
+      }
       const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
       const firestore = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
-      
       const app = initializeApp(cfg);
       db = cfg.firestoreDatabaseId
         ? firestore.getFirestore(app, cfg.firestoreDatabaseId)
@@ -156,15 +149,13 @@ async function initDataLayer() {
       fbModule = firestore;
       isRealFirebase = true;
       console.log('✅ Firebase Firestore 연결 완료:', cfg.projectId);
-      return;
-    } catch (err) {
-      console.warn('⚠️ Firebase 연결 실패, 로컬 시뮬레이션 모드로 전환합니다:', err);
-    }
+    })().catch(error => {
+      dataLayerPromise = null;
+      console.error('Firebase 연결 실패:', error);
+      throw error;
+    });
   }
-
-  // 로컬 시뮬레이터 모드
-  isRealFirebase = false;
-  console.log('💡 로컬 시뮬레이션 모드로 작동 중입니다. (Firebase 연결 시 클라우드 실시간 모드로 작동)');
+  return dataLayerPromise;
 }
 
 // ===================================================================
