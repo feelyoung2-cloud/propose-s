@@ -94,12 +94,12 @@
 
   <!-- 상단 네비게이션 -->
   <header class="top-nav">
-    <a href="index.html" class="nav-brand">
+    <a href="/home.html" class="nav-brand">
       <span>🏙️ 과천시 수업</span>
       <span class="badge">화면 2 · 교사용</span>
     </a>
     <div class="nav-actions">
-      <a href="index.html" class="btn-home">
+      <a href="/home.html" class="btn-home">
         <span>🏠 처음으로</span>
       </a>
     </div>
@@ -720,14 +720,19 @@
     });
 
     // 초기 실행
-    initCharts();
+    try { initCharts(); } catch (error) {
+      console.error('그래프 초기화 실패:', error);
+      showToast('그래프를 불러오지 못했지만 응답 수와 표는 계속 표시됩니다.', 'error');
+    }
     buildHeatmapStructure();
 
     // Firestore 실시간 구독
     subscribeResponses((data) => {
       updateDashboard(data);
     }, (err) => {
-      showToast('실시간 데이터를 불러오는 중 오류가 발생했습니다.', 'error');
+      showToast('설문 연결 실패: ' + (err.code || err.message || '인터넷 연결을 확인해 주세요.'), 'error');
+    }).catch((err) => {
+      showToast('설문 연결 실패: ' + (err.code || err.message), 'error');
     });
 
   </script>
